@@ -48,8 +48,7 @@ public class ClientRemoteSocket {
     public void onMessage(String input) throws Exception {
         BuildParams params = gson.fromJson(input, BuildParams.class);
         LOGGER.debug("{} message: {}", sessionName(), params);
-        String output = handler.process(params);
-        send(output);
+        handler.process(this, params);
     }
 
     @OnWebSocketClose
@@ -67,7 +66,7 @@ public class ClientRemoteSocket {
         LOGGER.debug("{} receive frame: {}", sessionName(), frame.getPayloadLength());
     }
 
-    public void send(final String msg) {
+    public void send(String msg) {
         LOGGER.debug("{} send message: {}", sessionName(), msg);
         session.getRemote().sendStringByFuture(msg);
     }
