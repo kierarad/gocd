@@ -16,41 +16,36 @@
 
 package com.thoughtworks.go.server.websocket;
 
-import com.thoughtworks.go.domain.AgentInstance;
+import com.thoughtworks.go.domain.ConsoleOut;
 import com.thoughtworks.go.domain.JobIdentifier;
-import com.thoughtworks.go.domain.JobInstance;
-import com.thoughtworks.go.remote.AgentInstruction;
-import com.thoughtworks.go.remote.BuildRepositoryRemote;
-import com.thoughtworks.go.server.service.AgentRuntimeInfo;
-import com.thoughtworks.go.server.service.AgentService;
 import com.thoughtworks.go.server.service.ConsoleService;
-import com.thoughtworks.go.server.service.JobInstanceService;
-import com.thoughtworks.go.websocket.*;
+import com.thoughtworks.go.server.service.RestfulService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class ClientRemoteHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClientRemoteHandler.class);
 
+
     @Autowired
-    private JobInstanceService jobInstanceService;
+    private RestfulService restfulService;
     private ConsoleService consoleService;
 
     @Autowired
-    public ClientRemoteHandler(JobInstanceService jobInstanceService, ConsoleService consoleService) {
-        this.jobInstanceService = jobInstanceService;
+    public ClientRemoteHandler(RestfulService restfulService, ConsoleService consoleService) {
+        this.restfulService = restfulService;
         this.consoleService = consoleService;
     }
 
     public String process(BuildParams params) throws Exception {
-        return params.toString();
+        JobIdentifier identifier = restfulService.findJob(params.getPipelineName(), params.getPipelineLabel(), params.getStageName(), params.getStageCounter(),
+                params.getJobName());
+        int startLine = 0;
+        ConsoleOut consoleOut = consoleService.getConsoleOut(identifier, startLine);
+        startLine = consoleOut.calculateNextStart();
+        return consoleOut.output();
     }
 }

@@ -23,6 +23,26 @@ public class BuildParams {
     private String pipelineLabel;
     private String stageCounter;
 
+    public String getPipelineName() {
+        return pipelineName;
+    }
+
+    public String getStageName() {
+        return stageName;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public String getPipelineLabel() {
+        return pipelineLabel;
+    }
+
+    public String getStageCounter() {
+        return stageCounter;
+    }
+
     @Override
     public String toString() {
         return "BuildParams{" +
