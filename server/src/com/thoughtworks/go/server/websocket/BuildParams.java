@@ -23,6 +23,34 @@ public class BuildParams {
     private String pipelineLabel;
     private String stageCounter;
 
+    public BuildParams(String pipelineName, String pipelineLabel, String stageName, String stageCounter, String jobName) {
+        this.pipelineName = pipelineName;
+        this.pipelineLabel = pipelineLabel;
+        this.stageName = stageName;
+        this.stageCounter = stageCounter;
+        this.jobName = jobName;
+    }
+
+    public void setPipelineName(String pipelineName) {
+        this.pipelineName = pipelineName;
+    }
+
+    public void setStageName(String stageName) {
+        this.stageName = stageName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    public void setPipelineLabel(String pipelineLabel) {
+        this.pipelineLabel = pipelineLabel;
+    }
+
+    public void setStageCounter(String stageCounter) {
+        this.stageCounter = stageCounter;
+    }
+
     public String getPipelineName() {
         return pipelineName;
     }
@@ -52,5 +80,9 @@ public class BuildParams {
                 ", pipelineLabel='" + pipelineLabel + '\'' +
                 ", stageCounter='" + stageCounter + '\'' +
                 '}';
+    }
+
+    public boolean isValid() {
+        return pipelineName != null && pipelineLabel != null && stageName != null && stageCounter != null && jobName != null;
     }
 }

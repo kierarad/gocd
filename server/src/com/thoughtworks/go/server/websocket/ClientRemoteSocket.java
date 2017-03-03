@@ -71,6 +71,11 @@ public class ClientRemoteSocket {
         session.getRemote().sendStringByFuture(msg);
     }
 
+    public void close() {
+        LOGGER.debug("closing session {}", sessionName());
+        session.close();
+    }
+
     private String sessionName() {
         return session == null ? "[No session initialized]" : "Session[" + session.getRemoteAddress() + "]";
     }

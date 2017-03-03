@@ -49,18 +49,28 @@ public class ClientRemoteHandler {
     }
 
     public void process(ClientRemoteSocket clientRemoteSocket, BuildParams params) throws Exception {
-        JobIdentifier identifier = restfulService.findJob(params.getPipelineName(), params.getPipelineLabel(),
-                params.getStageName(), params.getStageCounter(), params.getJobName());
-        int consoleOutputPosition = 0;
-        ConsoleOut consoleOut = readConsoleOut(identifier, consoleOutputPosition);
-        clientRemoteSocket.send(consoleOut.output());
-        JobInstance jobInstance = jobDetailService.findMostRecentBuild(identifier);
-        while (!jobInstance.currentStatus().isCompleted()) {
-            consoleOutputPosition = consoleOut.calculateNextStart();
-            consoleOut = readConsoleOut(identifier, consoleOutputPosition);
-            clientRemoteSocket.send(consoleOut.output());
-            jobInstance = jobDetailService.findMostRecentBuild(identifier);
+        if (!params.isValid()) {
+            clientRemoteSocket.send("Build not found. Console log unavailable.");
+            return;
         }
+        JobIdentifier jobIdentifier = restfulService.findJob(params.getPipelineName(), params.getPipelineLabel(),
+                params.getStageName(), params.getStageCounter(), params.getJobName());
+        int currentOutputPosition = 0;
+        int previousOutputPosition = currentOutputPosition;
+        ConsoleOut consoleOut = consoleService.getConsoleOut(jobIdentifier, currentOutputPosition);
+        clientRemoteSocket.send(consoleOut.output());
+        currentOutputPosition = consoleOut.calculateNextStart();
+        JobInstance jobInstance = jobDetailService.findMostRecentBuild(jobIdentifier);
+        while (!jobInstance.isCompleted()) {
+            consoleOut = consoleService.getConsoleOut(jobIdentifier, currentOutputPosition);
+            currentOutputPosition = consoleOut.calculateNextStart();
+            if (previousOutputPosition != currentOutputPosition) {
+                clientRemoteSocket.send(consoleOut.output());
+                previousOutputPosition = currentOutputPosition;
+                jobInstance = jobDetailService.findMostRecentBuild(jobIdentifier);
+            }
+        }
+        clientRemoteSocket.close();
     }
 
     private ConsoleOut readConsoleOut(JobIdentifier identifier, int consoleOutputPosition) throws IOException, IllegalArtifactLocationException {
