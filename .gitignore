@@ -64,7 +64,7 @@ agent-bootstrapper/target/
 agent-common/target/
 agent-launcher/target/
 agent-process-launcher/target/
-agent/*.log*
+agent/*.log
 agent/agent-plugins.zip
 agent/config/
 agent/felix-cache/
