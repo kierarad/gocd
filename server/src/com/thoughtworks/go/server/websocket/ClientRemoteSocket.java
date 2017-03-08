@@ -16,16 +16,11 @@
 package com.thoughtworks.go.server.websocket;
 
 import com.google.gson.Gson;
-import com.thoughtworks.go.websocket.Message;
-import com.thoughtworks.go.websocket.MessageEncoding;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.api.extensions.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 
 @WebSocket
 public class ClientRemoteSocket {

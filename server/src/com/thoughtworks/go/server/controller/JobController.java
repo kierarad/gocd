@@ -27,6 +27,7 @@ import com.thoughtworks.go.server.presentation.models.JobDetailPresentationModel
 import com.thoughtworks.go.server.presentation.models.JobStatusJsonPresentationModel;
 import com.thoughtworks.go.server.service.*;
 import com.thoughtworks.go.server.util.ErrorHandler;
+import com.thoughtworks.go.util.URLService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,8 @@ public class JobController {
     private StageService stageService;
     @Autowired
     private Localizer localizer;
+    @Autowired
+    private URLService urlService;
 
     public JobController() {
     }
@@ -77,7 +80,8 @@ public class JobController {
     JobController(
             JobInstanceService jobInstanceService, JobDetailService jobDetailService,
             GoConfigService goConfigService, PipelineService pipelineService, RestfulService restfulService,
-            ArtifactsService artifactService, PropertiesService propertiesService, StageService stageService, Localizer localizer) {
+            ArtifactsService artifactService, PropertiesService propertiesService, StageService stageService,
+            Localizer localizer, URLService urlService) {
         this.jobInstanceService = jobInstanceService;
         this.jobDetailService = jobDetailService;
         this.goConfigService = goConfigService;
@@ -87,6 +91,7 @@ public class JobController {
         this.propertiesService = propertiesService;
         this.stageService = stageService;
         this.localizer = localizer;
+        this.urlService = urlService;
     }
 
     @RequestMapping(value = "/tab/build/recent", method = RequestMethod.GET)
@@ -114,6 +119,7 @@ public class JobController {
         data.put("presenter", presenter);
         data.put("l", localizer);
         data.put("isEditableViaUI", goConfigService.isPipelineEditableViaUI(jobDetail.getPipelineName()));
+        data.put("websocketUrl", urlService.getClientWebsocketUrl());
         return new ModelAndView("build_detail/build_detail_page", data);
     }
 

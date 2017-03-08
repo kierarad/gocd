@@ -21,11 +21,8 @@ BuildOutputObserver.prototype = {
         var self = this;
         this.name = name;
         this.buildLocator = buildLocator;
-        this.start_line_number = 0;
         this.was_building = false;
-        this.is_output_empty = false;
         this.is_completed = false;
-        this.ansi_up = ansi_up.ansi_to_html_obj();
         this.enableTailing = true;
         this.window = jQuery(window);
         this.originalWindowScrollTop = this.window.scrollTop();
@@ -96,61 +93,10 @@ BuildOutputObserver.prototype = {
         this.update_build_detail_summary_status(json);
         this.is_completed = json.building_info.is_completed.toLowerCase() == "true";
 
-        if (this.is_completed && this.is_output_empty) {
+        if (this.is_completed) {
             this.update_page(json);
         }
-        else {
-            this.update_live_output.bind(this).delay(5);
-        }
-        this.reload_page(this.is_completed);
-    },
-    update_live_output : function() {
-        var _this = this;
-        if (!this.is_completed) {
-            var ajaxRequest = new Ajax.Request(context_path("files/" + _this.buildLocator), {
-                asynchronous:false,
-                method: 'GET',
-                parameters: 'startLineNumber=' + _this.start_line_number,
-                onSuccess: function(transport, next_start_as_json) {
-                    if (next_start_as_json) {
-                        _this.start_line_number = next_start_as_json[0];
-                        _this.is_output_empty = _this._update_live_output_color(transport.responseText);
-                    } else {
-                        _this.is_output_empty = true;
-                    }
-                },
-              onFailure: function(response){
-                if (404 === response.status){
-                  _this.is_output_empty = _this._update_live_output_color(response.responseText);
-                } else {
-                  var message = "There was an error contacting the server. The HTTP status was " + response.status + ".";
-                  _this.is_output_empty = _this._update_live_output_color(message);
-                }
-              }
-            });
-        }
-    },
-
-    _update_live_output_color: function(build_output) {
-        var is_output_empty = !build_output;
-        if (!is_output_empty) {
-
-            // parsing the entier console output and building HTML is computationally expensive and blows up memory
-            // we therefore chunk the console output into 1000 lines each and hand it over to the parser, and also insert it into the DOM.
-
-            var lines = build_output.match(/^.*([\n\r]+|$)/gm);
-            while(lines.length){
-                var slice = lines.splice(0, 1000);
-                var htmlContents = this.ansi_up.ansi_to_html(slice.join("").escapeHTML(), {use_classes: true});
-                this.consoleElement.append(htmlContents);
-            }
-        }
-
-        if (this.enableTailing){
-            this.scrollToBottom();
-        }
-
-        return is_output_empty;
+        //this.reload_page(this.is_completed);
     },
 
     update_page : function(json) {
@@ -166,7 +112,7 @@ BuildOutputObserver.prototype = {
     },
     display_error_message_if_necessary : function(json) {
         if (is_result_unknown(json)) {
-            var text = $$WordBreaker.break_text(json.building_info.name); //TODO: add log folder
+            var text = $$WordBreaker.break_text(json.building_info.name);
             $('trans_content').update("Failed to find log in <br/>" + text);
             new TransMessage('trans_message', $('build_detail_summary_container'), {type:TransMessage.TYPE_ERROR, autoHide:false, height:50});
         }

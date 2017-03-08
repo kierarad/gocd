@@ -27,14 +27,19 @@ import static java.lang.String.format;
 
 @Component
 public class URLService implements ServerUrlGenerator{
+    SystemEnvironment systemEnvironment;
     private String baseRemotingURL;
 
     public URLService() {
-        String url = new SystemEnvironment().getServiceUrl();
+        systemEnvironment = new SystemEnvironment();
+        baseRemotingURL = formatURL(systemEnvironment.getServiceUrl());
+    }
+
+    private String formatURL(String url) {
         if (url.endsWith("/")) {
             url = url.substring(0, url.length() - 1);
         }
-        baseRemotingURL = url;
+        return url;
     }
 
     public URLService(String baseRemotingURL) {
@@ -112,6 +117,20 @@ public class URLService implements ServerUrlGenerator{
         } catch (URISyntaxException e) {
             throw new RuntimeException("Invalid Go Server url", e);
         }
+    }
+
+    public String getClientWebsocketUrl() {
+        StringBuffer url = new StringBuffer("ws://");
+        String hostName = systemEnvironment.getListenHost();
+        if (hostName == null) {
+            hostName = "localhost";
+        }
+        url.append(hostName);
+        url.append(":");
+        url.append(systemEnvironment.getServerPort());
+        url.append(systemEnvironment.getWebappContextPath());
+        url.append("/client-websocket");
+        return url.toString();
     }
 
     public String prefixPartialUrl(String url) {

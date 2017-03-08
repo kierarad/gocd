@@ -27,6 +27,7 @@ import static org.junit.Assert.assertThat;
 
 public class URLServiceTest {
     private static final String BASE_URL = "http://localhost:9090/go";
+    private String LISTEN_HOST = "localhost";
 
     private URLService urlService;
     private JobIdentifier jobIdentifier;
@@ -40,6 +41,7 @@ public class URLServiceTest {
     @After
     public void teardown() {
         new SystemEnvironment().clearProperty("serviceUrl");
+        new SystemEnvironment().clearProperty("cruise.listen.host");
     }
 
     @Test
@@ -91,5 +93,11 @@ public class URLServiceTest {
     @Test
     public void agentRemoteWebSocketUrl() {
         assertThat(urlService.getAgentRemoteWebSocketUrl(), is("wss://localhost:8443/go/agent-websocket"));
+    }
+
+    @Test
+    public void shouldReturnClientWebsocketUrl() throws Exception {
+        new SystemEnvironment().setProperty("cruise.listen.host", LISTEN_HOST);
+        assertThat(urlService.getClientWebsocketUrl(), is("ws://localhost:8153/go/client-websocket"));
     }
 }

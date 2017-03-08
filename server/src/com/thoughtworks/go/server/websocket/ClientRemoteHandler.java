@@ -57,12 +57,12 @@ public class ClientRemoteHandler {
                 params.getStageName(), params.getStageCounter(), params.getJobName());
         int currentOutputPosition = 0;
         int previousOutputPosition = currentOutputPosition;
-        ConsoleOut consoleOut = consoleService.getConsoleOut(jobIdentifier, currentOutputPosition);
+        ConsoleOut consoleOut = readConsoleOut(jobIdentifier, currentOutputPosition);
         clientRemoteSocket.send(consoleOut.output());
         currentOutputPosition = consoleOut.calculateNextStart();
         JobInstance jobInstance = jobDetailService.findMostRecentBuild(jobIdentifier);
         while (!jobInstance.isCompleted()) {
-            consoleOut = consoleService.getConsoleOut(jobIdentifier, currentOutputPosition);
+            consoleOut = readConsoleOut(jobIdentifier, currentOutputPosition);
             currentOutputPosition = consoleOut.calculateNextStart();
             if (previousOutputPosition != currentOutputPosition) {
                 clientRemoteSocket.send(consoleOut.output());

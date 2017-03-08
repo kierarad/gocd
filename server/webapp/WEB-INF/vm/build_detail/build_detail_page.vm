@@ -181,7 +181,32 @@
   dashboard_periodical_executer.register(observer, new TimerObserver("$esc.javascript(${presenter.buildName})"));
   dashboard_periodical_executer.start();
 
-  observer.update_live_output();
+  var logWebsocket = new WebSocket('$websocketUrl');
+  logWebsocket.addEventListener('message', function(e) { displayOutput(e.data); });
+  logWebsocket.addEventListener('open', function () { console.log('$websocketUrl')});
+  logWebsocket.addEventListener('close', function(e) { console.log("closed"); });
+
+  (function wait(){
+    if (logWebsocket.readyState != 1){
+      setTimeout(wait,100);
+    } else {
+      logWebsocket.send('{ pipelineName: ${presenter.pipelineName}, stageName: ${presenter.stageName}, jobName: ${presenter.buildName}, stageCounter: ${presenter.stageCounter}, pipelineLabel: ${presenter.pipelineLabel} }');
+    }
+  })();
+
+  function displayOutput(build_output) {
+    if (build_output) {
+      var lines = build_output.match(/^.*([\n\r]+|$)/gm);
+      while (lines.length) {
+        var slice        = lines.splice(0, 1000);
+        var htmlContents = ansi_up.ansi_to_html_obj().ansi_to_html(slice.join("").escapeHTML(), {use_classes: true});
+        jQuery('.buildoutput_pre').append(htmlContents);
+        if (observer.enableTailing) {
+          observer.scrollToBottom();
+        }
+      }
+    }
+  }
 
   jQuery(function () {
     jQuery(document).on('click.changeTheme', '.change-theme', function (evt) {
