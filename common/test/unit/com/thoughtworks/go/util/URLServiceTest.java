@@ -94,10 +94,4 @@ public class URLServiceTest {
     public void agentRemoteWebSocketUrl() {
         assertThat(urlService.getAgentRemoteWebSocketUrl(), is("wss://localhost:8443/go/agent-websocket"));
     }
-
-    @Test
-    public void shouldReturnClientWebsocketUrl() throws Exception {
-        new SystemEnvironment().setProperty("cruise.listen.host", LISTEN_HOST);
-        assertThat(urlService.getClientWebsocketUrl(), is("ws://localhost:8153/go/client-websocket"));
-    }
 }

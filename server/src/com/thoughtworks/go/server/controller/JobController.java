@@ -119,7 +119,6 @@ public class JobController {
         data.put("presenter", presenter);
         data.put("l", localizer);
         data.put("isEditableViaUI", goConfigService.isPipelineEditableViaUI(jobDetail.getPipelineName()));
-        data.put("websocketUrl", urlService.getClientWebsocketUrl());
         return new ModelAndView("build_detail/build_detail_page", data);
     }
 

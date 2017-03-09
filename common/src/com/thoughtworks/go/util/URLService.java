@@ -119,20 +119,6 @@ public class URLService implements ServerUrlGenerator{
         }
     }
 
-    public String getClientWebsocketUrl() {
-        StringBuffer url = new StringBuffer("ws://");
-        String hostName = systemEnvironment.getListenHost();
-        if (hostName == null) {
-            hostName = "localhost";
-        }
-        url.append(hostName);
-        url.append(":");
-        url.append(systemEnvironment.getServerPort());
-        url.append(systemEnvironment.getWebappContextPath());
-        url.append("/client-websocket");
-        return url.toString();
-    }
-
     public String prefixPartialUrl(String url) {
         if(url.startsWith("/")) {
             return format("%s%s", baseRemoteURL(), url);

@@ -181,20 +181,26 @@
   dashboard_periodical_executer.register(observer, new TimerObserver("$esc.javascript(${presenter.buildName})"));
   dashboard_periodical_executer.start();
 
-  var logWebsocket = new WebSocket('$websocketUrl');
-  logWebsocket.addEventListener('message', function(e) { displayOutput(e.data); });
-  logWebsocket.addEventListener('open', function () { console.log('$websocketUrl')});
-  logWebsocket.addEventListener('close', function(e) { console.log("closed"); });
+  var logWebsocket = new WebSocket(buildWebSocketUrl());
+  logWebsocket.addEventListener('open', requestLog);
+  logWebsocket.addEventListener('message', displayOutput);
 
-  (function wait(){
-    if (logWebsocket.readyState != 1){
-      setTimeout(wait,100);
-    } else {
-      logWebsocket.send('{ pipelineName: ${presenter.pipelineName}, stageName: ${presenter.stageName}, jobName: ${presenter.buildName}, stageCounter: ${presenter.stageCounter}, pipelineLabel: ${presenter.pipelineLabel} }');
-    }
-  })();
+  function buildWebSocketUrl() {
+    var protocol = window.location.protocol.replace("http", "ws");
+    var host = window.location.host
+    return protocol + "//" + host + context_path('client-websocket');
+  }
 
-  function displayOutput(build_output) {
+  function requestLog() {
+    logWebsocket.send('{ pipelineName: ${presenter.pipelineName}, \
+      stageName: ${presenter.stageName}, \
+      jobName: ${presenter.buildName}, \
+      stageCounter: ${presenter.stageCounter}, \
+      pipelineLabel: ${presenter.pipelineLabel} }');
+  }
+
+  function displayOutput(e) {
+    var build_output = e.data;
     if (build_output) {
       var lines = build_output.match(/^.*([\n\r]+|$)/gm);
       while (lines.length) {
