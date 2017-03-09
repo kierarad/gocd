@@ -170,13 +170,6 @@
   </servlet>
 
   <servlet>
-    <servlet-name>client-websocket</servlet-name>
-    <servlet-class>com.thoughtworks.go.server.websocket.ClientRemoteServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-    <async-supported>true</async-supported>
-  </servlet>
-
-  <servlet>
     <servlet-name>spring-repository</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
@@ -291,11 +284,6 @@
   <servlet-mapping>
     <servlet-name>agent-websocket</servlet-name>
     <url-pattern>/agent-websocket/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>client-websocket</servlet-name>
-    <url-pattern>/client-websocket</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

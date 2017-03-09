@@ -294,9 +294,7 @@
                 /api/users/**=ROLE_USER
                 /api/version_infos/**=ROLE_USER
                 /*/environments/*=ROLE_SUPERVISOR
-                /client-websocket=ROLE_USER
                 /oauth/admin/**=ROLE_SUPERVISOR
-
                 /oauth/token=IS_AUTHENTICATED_ANONYMOUSLY
                 /oauth/authorize=ROLE_USER
                 /oauth/user_tokens=ROLE_USER

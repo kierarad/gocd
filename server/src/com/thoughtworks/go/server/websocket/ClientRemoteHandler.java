@@ -22,7 +22,6 @@ import com.thoughtworks.go.domain.JobInstance;
 import com.thoughtworks.go.domain.exception.IllegalArtifactLocationException;
 import com.thoughtworks.go.server.service.ConsoleService;
 import com.thoughtworks.go.server.service.JobDetailService;
-import com.thoughtworks.go.server.service.RestfulService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,30 +36,24 @@ public class ClientRemoteHandler {
 
 
     @Autowired
-    private RestfulService restfulService;
     private ConsoleService consoleService;
     private JobDetailService jobDetailService;
 
     @Autowired
-    public ClientRemoteHandler(RestfulService restfulService, ConsoleService consoleService, JobDetailService jobDetailService) {
-        this.restfulService = restfulService;
+    public ClientRemoteHandler(ConsoleService consoleService, JobDetailService jobDetailService) {
         this.consoleService = consoleService;
         this.jobDetailService = jobDetailService;
     }
 
-    public void process(ClientRemoteSocket clientRemoteSocket, BuildParams params) throws Exception {
-        if (!params.isValid()) {
-            clientRemoteSocket.send("Build not found. Console log unavailable.");
-            return;
-        }
-        JobIdentifier jobIdentifier = restfulService.findJob(params.getPipelineName(), params.getPipelineLabel(),
-                params.getStageName(), params.getStageCounter(), params.getJobName());
+    public void process(ConsoleLogEndpoint clientRemoteSocket, JobIdentifier jobIdentifier) throws Exception {
         int currentOutputPosition = 0;
         int previousOutputPosition = currentOutputPosition;
+
         ConsoleOut consoleOut = readConsoleOut(jobIdentifier, currentOutputPosition);
         clientRemoteSocket.send(consoleOut.output());
         currentOutputPosition = consoleOut.calculateNextStart();
         JobInstance jobInstance = jobDetailService.findMostRecentBuild(jobIdentifier);
+
         while (!jobInstance.isCompleted()) {
             consoleOut = readConsoleOut(jobIdentifier, currentOutputPosition);
             currentOutputPosition = consoleOut.calculateNextStart();

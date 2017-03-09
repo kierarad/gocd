@@ -182,21 +182,12 @@
   dashboard_periodical_executer.start();
 
   var logWebsocket = new WebSocket(buildWebSocketUrl());
-  logWebsocket.addEventListener('open', requestLog);
   logWebsocket.addEventListener('message', displayOutput);
 
   function buildWebSocketUrl() {
     var protocol = window.location.protocol.replace("http", "ws");
     var host = window.location.host
-    return protocol + "//" + host + context_path('client-websocket');
-  }
-
-  function requestLog() {
-    logWebsocket.send('{ pipelineName: ${presenter.pipelineName}, \
-      stageName: ${presenter.stageName}, \
-      jobName: ${presenter.buildName}, \
-      stageCounter: ${presenter.stageCounter}, \
-      pipelineLabel: ${presenter.pipelineLabel} }');
+    return protocol + "//" + host + context_path('client-websocket/${presenter.pipelineName}/${presenter.pipelineLabel}/${presenter.stageName}/${presenter.stageCounter}/${presenter.buildName}');
   }
 
   function displayOutput(e) {
