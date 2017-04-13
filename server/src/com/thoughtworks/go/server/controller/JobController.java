@@ -147,11 +147,10 @@ public class JobController {
                                       HttpServletResponse response) {
         Object json;
         try {
-            JobInstance requestedInstance = jobInstanceService.buildByIdWithTransitions(jobId);
+            JobInstance requestedInstance = jobInstanceService.buildByIdWithAgentInfo(jobId);
             JobInstance mostRecentJobInstance = jobDetailService.findMostRecentBuild(requestedInstance.getIdentifier());
 
             JobStatusJsonPresentationModel presenter = new JobStatusJsonPresentationModel(mostRecentJobInstance,
-                    goConfigService.agentByUuid(mostRecentJobInstance.getAgentUuid()),
                     stageService.getBuildDuration(pipelineName, stageName, mostRecentJobInstance));
             json = createBuildInfo(presenter);
         } catch (Exception e) {

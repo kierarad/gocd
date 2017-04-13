@@ -21,24 +21,59 @@ import com.thoughtworks.go.domain.PersistentObject;
 /**
  * @understands agent uuid to cookie mapping
  */
-public class AgentCookie extends PersistentObject {
+public class Agent extends PersistentObject {
     private String uuid;
     private String cookie;
+    private String hostname;
+    private String ipaddress;
 
-    public AgentCookie(String uuid, String cookie) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public void setCookie(String cookie) {
         this.cookie = cookie;
     }
 
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
+    public void setIpaddress(String ipaddress) {
+        this.ipaddress = ipaddress;
+    }
+
+    public Agent(String uuid, String cookie, String hostname, String ipaddress) {
+        this.uuid = uuid;
+        this.cookie = cookie;
+        this.hostname = hostname;
+        this.ipaddress = ipaddress;
+    }
+
     @Deprecated //for hibernate
-    private AgentCookie() {
+    private Agent() {
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     public String getCookie() {
         return cookie;
     }
 
-    public void updateCookie(String cookie) {
-        this.cookie = cookie;
+    public String getIpaddress() {
+        return ipaddress;
     }
+
+    public void update(String cookie, String hostname, String ipaddress) {
+        this.cookie = cookie;
+        this.hostname = hostname;
+        this.ipaddress = ipaddress;
+    }
+
 }

@@ -37,6 +37,8 @@ public class JobInstance extends PersistentObject implements Serializable, Compa
     private JobState state;
     private JobResult result = JobResult.Unknown;
     private String agentUuid;
+    private String agentHostname;
+    private String agentIpAddress;
     private JobStateTransitions stateTransitions = new JobStateTransitions();
     private Date scheduledDate;
     private boolean ignored;
@@ -137,6 +139,14 @@ public class JobInstance extends PersistentObject implements Serializable, Compa
         return agentUuid;
     }
 
+    public String getAgentHostname() {
+        return agentHostname;
+    }
+
+    public String getAgentIpAddress() {
+        return agentIpAddress;
+    }
+
     public void setAgentUuid(String agentUuid) {
         this.agentUuid = agentUuid;
     }
@@ -148,6 +158,8 @@ public class JobInstance extends PersistentObject implements Serializable, Compa
                 ", state=" + state +
                 ", result=" + result +
                 ", agentUuid='" + agentUuid + '\'' +
+                ", agentHostname='" + agentHostname + '\'' +
+                ", agentIpAddress='" + agentIpAddress + '\'' +
                 ", stateTransitions=" + stateTransitions +
                 ", scheduledDate=" + scheduledDate +
                 ", timeProvider=" + timeProvider +
@@ -430,6 +442,12 @@ public class JobInstance extends PersistentObject implements Serializable, Compa
         if (agentUuid != null ? !agentUuid.equals(instance.agentUuid) : instance.agentUuid != null) {
             return false;
         }
+        if (agentHostname != null ? !agentHostname.equals(instance.agentHostname) : instance.agentHostname != null) {
+            return false;
+        }
+        if (agentIpAddress != null ? !agentIpAddress.equals(instance.agentIpAddress) : instance.agentIpAddress != null) {
+            return false;
+        }
         if (identifier != null ? !identifier.equals(instance.identifier) : instance.identifier != null) {
             return false;
         }
@@ -460,6 +478,8 @@ public class JobInstance extends PersistentObject implements Serializable, Compa
         result1 = 31 * result1 + (state != null ? state.hashCode() : 0);
         result1 = 31 * result1 + (result != null ? result.hashCode() : 0);
         result1 = 31 * result1 + (agentUuid != null ? agentUuid.hashCode() : 0);
+        result1 = 31 * result1 + (agentHostname != null ? agentHostname.hashCode() : 0);
+        result1 = 31 * result1 + (agentIpAddress != null ? agentIpAddress.hashCode() : 0);
         result1 = 31 * result1 + (stateTransitions != null ? stateTransitions.hashCode() : 0);
         result1 = 31 * result1 + (scheduledDate != null ? scheduledDate.hashCode() : 0);
         result1 = 31 * result1 + (timeProvider != null ? timeProvider.hashCode() : 0);

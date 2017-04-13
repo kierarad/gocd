@@ -20,15 +20,12 @@ import com.thoughtworks.go.config.AgentConfig;
 import com.thoughtworks.go.domain.JobInstance;
 import com.thoughtworks.go.domain.JobResult;
 import com.thoughtworks.go.domain.JobState;
-import com.thoughtworks.go.domain.NullAgent;
 import com.thoughtworks.go.dto.DurationBean;
 import com.thoughtworks.go.server.web.JsonView;
 import com.thoughtworks.go.util.TimeConverter;
 import org.joda.time.DateTime;
 
-import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import static com.thoughtworks.go.domain.JobState.*;
@@ -36,30 +33,24 @@ import static java.lang.String.valueOf;
 
 
 public class JobStatusJsonPresentationModel {
-    private AgentConfig agentConfig;
     private final JobInstance instance;
     private TimeConverter timeConverter = new TimeConverter();
     private DurationBean durationBean;
 
-    public JobStatusJsonPresentationModel(JobInstance instance, AgentConfig agentConfig, DurationBean durationBean) {
+    public JobStatusJsonPresentationModel(JobInstance instance, DurationBean durationBean) {
         this.instance = instance;
-        this.agentConfig = agentConfig == null ? NullAgent.createNullAgent() : agentConfig;
         this.durationBean = durationBean;
     }
 
-    public JobStatusJsonPresentationModel(JobInstance instance, AgentConfig agentConfig) {
-        this(instance, agentConfig, new DurationBean(instance.getId()));
-    }
-
     public JobStatusJsonPresentationModel(JobInstance instance) {
-        this(instance, null, new DurationBean(instance.getId()));
+        this(instance, new DurationBean(instance.getId()));
     }
 
     public Map toJsonHash() {
         Map<String, Object> jsonParams = new LinkedHashMap<>();
-        jsonParams.put("agent", agentConfig.getHostNameForDispaly());
-        jsonParams.put("agent_ip", agentConfig.getIpAddress());
-        jsonParams.put("agent_uuid", agentConfig.getUuid());
+        jsonParams.put("agent", instance.getAgentHostname());
+        jsonParams.put("agent_ip", instance.getAgentIpAddress());
+        jsonParams.put("agent_uuid", instance.getAgentUuid());
         jsonParams.put("build_scheduled_date", getPreciseScheduledDate());
         jsonParams.put("build_assigned_date", getPreciseDateFor(Assigned));
         jsonParams.put("build_preparing_date", getPreciseDateFor(Preparing));

@@ -116,6 +116,10 @@ public class JobInstanceService implements JobPlanLoader, ConfigChangedListener 
         return jobInstanceDao.buildByIdWithTransitions(buildId);
     }
 
+    public JobInstance buildByIdWithAgentInfo(long buildId) {
+        return jobInstanceDao.buildByIdWithAgentInfo(buildId);
+    }
+
     public JobInstance buildById(long buildId) {
         return jobInstanceDao.buildById(buildId);
     }

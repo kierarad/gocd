@@ -84,6 +84,19 @@ public class JobInstanceSqlMapDao extends SqlMapClientDaoSupport implements JobI
         this.jobAgentMetadataDao = jobAgentMetadataDao;
     }
 
+
+    public JobInstance buildByIdWithAgentInfo(long buildInstanceId) {
+        String cacheKey = cacheKeyforJobInstanceWithTransitions(buildInstanceId);
+        synchronized (cacheKey) {
+            JobInstance instance = (JobInstance) goCache.get(cacheKey);
+            if (instance == null) {
+                instance = job(buildInstanceId, "buildByIdWithAgentInfo");
+                goCache.put(cacheKey, instance);
+            }
+            return cloner.deepClone(instance);
+        }
+    }
+
     public JobInstance buildByIdWithTransitions(long buildInstanceId) {
         String cacheKey = cacheKeyforJobInstanceWithTransitions(buildInstanceId);
         synchronized (cacheKey) {

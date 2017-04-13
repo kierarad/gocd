@@ -48,6 +48,14 @@
         <result property="transitions" resultMap="BuildStateTransition.build-transition"/>
     </resultMap>
 
+    <resultMap id="select-build-with-identifier-and-agent-info"
+               class="com.thoughtworks.go.domain.JobInstance"
+               extends="select-build-with-identifier"
+               groupBy="id" >
+        <result property="agentHostname" column="agentHostname"/>
+        <result property="agentIpAddress" column="agentIpAddress"/>
+    </resultMap>
+
     <resultMap id="jobIdentifier" class="com.thoughtworks.go.domain.JobIdentifier">
         <result property="pipelineName" column="pipelineName"/>
         <result property="pipelineCounter" column="pipelineCounter"/>
@@ -213,20 +221,43 @@
     </select>
 
     <select id="buildByIdWithTransitions" resultMap="select-build-with-identifier-transitions">
-       SELECT builds.*, builds.id as buildId,
+       SELECT builds.*,
+       builds.id as buildId,
        buildstatetransitions.currentState, buildstatetransitions.statechangetime, buildstatetransitions.id as stateId,
         stages.name as stageName,
         stages.counter as stageCounter,
         pipelines.name as pipelineName,
         pipelines.counter as pipelineCounter,
         pipelines.label as pipelineLabel,
-        stages.rerunOfCounter as rerunOfCounter
+        stages.rerunOfCounter as rerunOfCounter,
+        agents.hostname as agentHostname,
+        agents.ipaddress as agentIpAddress
        FROM builds
        LEFT JOIN buildstatetransitions ON builds.id = buildstatetransitions.buildId
         INNER JOIN stages ON stages.id = builds.stageId
         INNER JOIN pipelines ON stages.pipelineId = pipelines.id
+        INNER JOIN agents ON builds.agentUuid = agents.uuid
        WHERE builds.id = #value#
        ORDER BY buildstatetransitions.id ASC 
+    </select>
+
+    <select id="buildByIdWithAgentInfo" resultMap="select-build-with-identifier-and-agent-info">
+       SELECT builds.*,
+       builds.id as buildId,
+        stages.name as stageName,
+        stages.counter as stageCounter,
+        pipelines.name as pipelineName,
+        pipelines.counter as pipelineCounter,
+        pipelines.label as pipelineLabel,
+        stages.rerunOfCounter as rerunOfCounter,
+        agents.hostname as agentHostname,
+        agents.ipaddress as agentIpAddress
+       FROM builds
+        INNER JOIN stages ON stages.id = builds.stageId
+        INNER JOIN pipelines ON stages.pipelineId = pipelines.id
+        INNER JOIN agents ON builds.agentUuid = agents.uuid
+       WHERE builds.id = #value#
+       ORDER BY buildstatetransitions.id ASC
     </select>
 
     <select id="buildById" resultMap="select-build-with-identifier">

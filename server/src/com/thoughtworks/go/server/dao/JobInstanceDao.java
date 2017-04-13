@@ -51,6 +51,8 @@ public interface JobInstanceDao {
 
     JobInstance buildByIdWithTransitions(long id);
 
+    JobInstance buildByIdWithAgentInfo(long id);
+
     JobInstance buildById(long buildId);
 
     List<ActiveJob> activeJobs();

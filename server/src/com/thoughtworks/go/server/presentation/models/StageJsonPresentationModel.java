@@ -126,7 +126,6 @@ public class StageJsonPresentationModel implements JsonAware {
         List plans = new ArrayList();
         for (JobInstance job : builds) {
             JobStatusJsonPresentationModel presenter = new JobStatusJsonPresentationModel(job,
-                    agents.getAgentByUuid(job.getAgentUuid()),
                     durations.byId(job.getId()));
             Map jsonMap = presenter.toJsonHash();
             jsonMap.put("buildLocator", job.buildLocator());
