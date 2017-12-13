@@ -29,17 +29,37 @@
     </authorization>
     <pipeline name="up42">
       <materials>
-        <git url="test-repo" />
+        <git url="git@github.com:kierarad/patu.git" />
       </materials>
       <stage name="up42_stage">
         <jobs>
-          <job name="up42_job">
+          <job name="job_1">
             <tasks>
               <exec command="ls" />
+            </tasks>
+          </job>
+          <job name="job_2">
+            <tasks>
+              <exec command="echo">
+                <arg>"hello world"</arg>
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+          <job name="job_3">
+            <tasks>
+              <exec command="echo">
+                <arg>"done!"</arg>
+                <runif status="passed" />
+              </exec>
             </tasks>
           </job>
         </jobs>
       </stage>
     </pipeline>
   </pipelines>
+  <agents>
+    <agent hostname="Kieras-Mac.local" ipaddress="10.19.23.63" uuid="6557611e-26d2-4245-8ae2-4270d9e23687" />
+    <agent hostname="Kieras-Mac.local" ipaddress="127.0.0.1" uuid="d493bec6-0434-49e1-9142-f885209b5589" />
+  </agents>
 </cruise>
