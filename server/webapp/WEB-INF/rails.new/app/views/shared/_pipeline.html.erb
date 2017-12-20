@@ -67,7 +67,7 @@
                     <a href="<%= url_for_pipeline_value_stream_map(active_pipeline_in_pipeline) -%>" title="VSM for Pipeline Instance: <%= active_pipeline_in_pipeline.getLabel()%>">VSM</a>
                 </span>
                 <span class="analytics_link_wrapper">
-                     <a onclick="Util.ajax_modal(<%= pipeline_analytics_path(plugin_id: 'com.thoughtworks.gocd.analytics', pipeline_name: active_pipeline_in_pipeline.getName()).inspect -%>, {}); return false;" title="Analytics for Pipeline Instance: <%= active_pipeline_in_pipeline.getName() %>"><i class="fa fa-bar-chart"></i></a>
+                     <a onclick='Analytics.modal(<%== {plugin_id: "com.thoughtworks.gocd.analytics", pipeline_name: active_pipeline_in_pipeline.getName(), pipeline_counter: active_pipeline_in_pipeline.getCounter()}.to_json %>); return false;' title="Analytics for Pipeline Instance: <%= active_pipeline_in_pipeline.getName() %>"><i class="fa fa-bar-chart"></i></a>
                 </span>
                 <%= render :partial=> 'pipelines/pipeline_instance_details.html', :locals => {:scope =>{:active_pipeline_in_pipeline => active_pipeline_in_pipeline}} %>
             </div>

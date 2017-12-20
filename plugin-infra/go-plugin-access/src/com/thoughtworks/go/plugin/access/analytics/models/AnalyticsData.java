@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package com.thoughtworks.go.plugin.access.analytics;
+package com.thoughtworks.go.plugin.access.analytics.models;
 
-import com.thoughtworks.go.plugin.access.analytics.models.AnalyticsData;
+import com.google.gson.Gson;
 
-public interface AnalyticsMessageConverter {
-    com.thoughtworks.go.plugin.domain.analytics.Capabilities getCapabilitiesFromResponseBody(String responseBody);
+public class AnalyticsData {
+    String data;
+    String viewPath;
 
-    String getPipelineAnalyticsRequestBody(String pipelineName);
+    public String getData() {
+        return data;
+    }
 
-    AnalyticsData getPipelineAnalyticsFromResponseBody(String responseBody);
+    public String getViewPath() {
+        return viewPath;
+    }
+
+    public String toJson() {
+        return new Gson().toJson(this);
+    }
 }

@@ -1,0 +1,59 @@
+<html>
+<script src="https://code.highcharts.com/highcharts.src.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.4/lodash.min.js"></script>
+<script>
+  window.addEventListener("message", receiveMessage, false);
+
+
+  function filterByCounter(data, counter) {
+    return _.filter(data, function(el) {
+      return el.pipeline_counter === counter;
+    });
+  }
+
+  function plotChart(data, counter) {
+    var jobs = filterByCounter(data, counter);
+
+    Highcharts.chart('job-chart-container', {
+      chart: {
+        type: 'column'
+      },
+      title: {
+        text: 'Job Timing'
+      },
+      xAxis: {
+        categories: _.map(jobs, "job_name")
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: 'Duration'
+        }
+      },
+      plotOptions: {
+        series: {
+          stacking: 'normal'
+        }
+      },
+      series: [{
+        name: 'Build Time',
+        data: _.map(jobs, "time_building")
+      },
+      {
+        name: 'Time Spent Waiting',
+        data: _.map(jobs, "time_waiting")
+      }]
+    });
+
+  }
+
+  function receiveMessage(event) {
+    if (event.origin === origin) {
+      plotChart(event.data.data, event.data.counter);
+    }
+  }
+</script>
+<body>
+  <div id='job-chart-container'></div>
+</body>
+</html>
