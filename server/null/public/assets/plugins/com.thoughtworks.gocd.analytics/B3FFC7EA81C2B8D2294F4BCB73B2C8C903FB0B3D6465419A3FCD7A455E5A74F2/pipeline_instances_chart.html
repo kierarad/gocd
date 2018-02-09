@@ -1,0 +1,136 @@
+<html>
+  <head>
+    <script src="js/highcharts-6.0.4.min.js"></script>
+    <script src="js/lodash-4.17.4.min.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/moment-2.20.1.min.js"></script>
+    <script src="js/moment-duration-format-2.2.1.js"></script>
+    <script src="js/moment-humanize-for-gocd.js"></script>
+    <script src="plugin-endpoint.js"></script>
+    <script>
+
+function calcMean(pipelineData) {
+  return _.mean(_.map(pipelineData, function(instance) {
+    return instance.total_time - instance.time_waiting
+  }));
+}
+
+function dataPointsProcessor(pipelineData) {
+  debugger;
+  var dataPoints = _.map(pipelineData, function(instance) {
+    var color = "#00c853"
+    if (instance.result === "Failed") {
+      color = "#fa2d2d"
+    } else if (instance.result === "Cancelled") {
+      color = "#ffc11b"
+    }
+    return dataPoint = {
+      y: instance.total_time - instance.time_waiting,
+      created_at: instance.created_at,
+      color: color
+    }
+  });
+  return dataPoints;
+}
+
+function calcMttr(pipelineInstances) {
+  var stats = _.reduce(pipelineInstances, function(memo, pipe) {
+    if (!memo.lastFailed && pipe.result.toLowerCase() === "failed") {
+      memo.lastFailed = pipe;
+    } else if (memo.lastFailed && pipe.result.toLowerCase() === "passed") {
+      memo.ttr += new Date(pipe.last_transition_time) - new Date(memo.lastFailed.created_at);
+      memo.population += 1;
+      memo.lastFailed = null;
+    }
+
+    return memo;
+  }, {ttr: 0, population: 0, lastFailed: null});
+
+  return stats.population !== 0 ? stats.ttr / stats.population : 0;
+}
+
+PluginEndpoint.onInit(function(message, reply) {
+  var pipeline = JSON.parse(message.data);
+  var pipelineData = pipeline.instances;
+
+  $(".mttr").text("MTTR: " + moment.duration(calcMttr(pipelineData), 'ms').humanizeForGoCD());
+
+  Highcharts.setOptions({
+    lang: {
+      thousandsSep: ""
+    }
+  });
+  Highcharts.chart('pipeline-chart-container', {
+    chart: {
+      type: 'area',
+    },
+    title: {
+      text: 'Pipeline Build Time'
+    },
+    xAxis: {
+      title: {
+        text: 'Pipeline Counter'
+      },
+      tickmarkPlacement: "on",
+      categories: _.map(pipelineData, "counter")
+    },
+    yAxis: {
+      title: {
+        text: 'Duration'
+      },
+      labels: {
+        formatter: function() {
+          return moment.duration(this.value, 's').humanizeForGoCD();
+        }
+      },
+      plotLines: [{
+        color: 'black',
+        dashStyle: 'dot',
+        width: 2,
+        value: calcMean(pipelineData),
+        label: {
+          text: 'Mean Build Time'
+        }
+      }]
+    },
+    plotOptions: {
+      area: {
+        stacking: "normal"
+      }
+    },
+    tooltip: {
+      shared: true,
+      formatter: function() {
+        var buildTimePoint = this.points[0].point;
+        var s = "<span style=\"font-size: 12px\">Instance: " + this.x + " <span style=\"color:" + buildTimePoint.color + "\">\u25CF</span></span><br/>";
+        s += "Started On: " + buildTimePoint.created_at + "<br />";
+        $.each(this.points, function() {
+          s += "<br />" + this.series.name + ": " + moment.duration(this.y, 's').humanizeForGoCD() ;
+        });
+        return s;
+      }
+    },
+    series: [{
+      name: 'Time Building',
+      pointPlacement: "on",
+      data: dataPointsProcessor(pipelineData)
+    },
+    {
+      name: 'Time Waiting',
+      pointPlacement: "on",
+      color: "rgb(153, 158, 255)",
+      data: _.map(pipelineData, "time_waiting")
+    }]
+  });
+});
+
+
+PluginEndpoint.ensure();
+
+    </script>
+  </head>
+  <body>
+    <div class="mttr"></div>
+    <div id='pipeline-chart-container'></div>
+  </body>
+</html>

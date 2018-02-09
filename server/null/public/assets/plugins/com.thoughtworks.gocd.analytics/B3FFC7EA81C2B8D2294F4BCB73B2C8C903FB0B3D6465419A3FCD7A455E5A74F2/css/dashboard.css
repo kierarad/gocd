@@ -1,0 +1,22 @@
+#analytics_dashboard .pipelines  {
+  margin: 0px;
+  list-style: none;
+  padding: 0px;
+}
+
+#analytics_dashboard .pipelines li {
+  cursor: pointer;
+  border-radius: 3.5px;
+  padding: 0.5px;
+}
+
+#analytics_dashboard .pipelines li:nth-child(2n) {
+}
+
+#analytics_dashboard .pipelines li:nth-child(2n - 1) {
+  background-color: #e2e2e2;
+}
+
+#analytics_dashboard h4 {
+  margin: 0px;
+}

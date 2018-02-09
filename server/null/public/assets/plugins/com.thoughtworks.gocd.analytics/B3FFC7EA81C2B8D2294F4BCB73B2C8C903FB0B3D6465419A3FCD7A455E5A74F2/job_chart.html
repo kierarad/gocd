@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <script src="js/highcharts-6.0.4.min.js"></script>
+    <script src="js/lodash-4.17.4.min.js"></script>
+    <script src="js/moment-2.20.1.min.js"></script>
+    <script src="js/moment-duration-format-2.2.1.js"></script>
+    <script src="js/moment-humanize-for-gocd.js"></script>
+    <script src="plugin-endpoint.js"></script>
+
+    <script>
+
+var BUILDING_COLOR = "#ffc11b";
+var WAITING_COLOR = "#dedede";
+
+PluginEndpoint.onInit(function(data, reply) {
+  plotChart(JSON.parse(data.data));
+});
+
+function plotChart(jobs) {
+  Highcharts.chart('job-chart-container', {
+    chart: {
+      type: 'bar',
+    },
+    title: {
+      text: 'Jobs Waiting the Longest for an Agent'
+    },
+    subtitle: {
+      text: "(within the last 7 days)"
+    },
+    xAxis: {
+      categories: _.map(jobs, "identifier"),
+      labels: {
+        formatter: function() {
+          return this.value.split("/").pop();
+        }
+      }
+    },
+    yAxis: {
+      min: 0,
+      title: {
+        text: 'Duration (in minutes)'
+      }
+    },
+    tooltip: {
+      formatter: function () {
+        return _.reduce(this.points, function (res, el) {
+          return res + "<br/>" + el.series.name + ": " + moment.duration(el.y, 'm').humanizeForGoCD();
+        }, "<strong>" + this.x + "</strong>");
+      },
+      shared: true
+    },
+    plotOptions: {
+      series: {
+        stacking: 'normal'
+      }
+    },
+    colors: [BUILDING_COLOR, WAITING_COLOR],
+    series: [{
+      name: 'Time Spent Building',
+      data: _.map(jobs, function(j) {
+        return j.time_building / 60.0;
+      })
+    },
+    {
+      name: 'Time Spent Waiting',
+      data: _.map(jobs, function(j) {
+        return j.time_waiting / 60.0;
+      })
+    }]
+  });
+}
+
+PluginEndpoint.ensure();
+
+    </script>
+  </head>
+  <body>
+    <div id='job-chart-container'></div>
+  </body>
+</html>

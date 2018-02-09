@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <link href="css/dashboard.css" rel="stylesheet">
+    <script src="js/highcharts-6.0.4.min.js"></script>
+    <script src="js/lodash-4.17.4.min.js"></script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="plugin-endpoint.js"></script>
+    <script>
+
+function createPipelineItems(pipeline_list, pipelines) {
+  for (var i = 0; i < pipelines.length; i++) {
+    pipeline_list.append(createPipelineItem(pipelines[i].name));
+  }
+}
+
+function createPipelineItem(pipelineName) {
+  return $("<li class='pipeline'></li>")
+    .text(pipelineName);
+}
+
+PluginEndpoint.onInit(function(data, reply) {
+  var pipelines = JSON.parse(data.data);
+  var pipeline_list = $("#analytics_dashboard ul.pipelines").on("click", "li.pipeline", function(e) {
+    reply("analytics.pipeline", { "pipelineName": $(this).text() });
+  });
+  createPipelineItems(pipeline_list, _.orderBy(pipelines, ["name"], ["asc"]));
+});
+
+PluginEndpoint.ensure();
+    </script>
+  </head>
+  <body>
+    <div id="analytics_dashboard">
+      <h4>Pipelines:</h4>
+      <ul class="pipelines"></ul>
+    </div>
+  </body>
+</html>
