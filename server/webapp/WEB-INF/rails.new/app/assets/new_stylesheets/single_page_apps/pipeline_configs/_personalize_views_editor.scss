@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+.personalize-editor.current-overlay {
+  top: 10vh;
+}
+
 .overlay.personalize-editor {
   width: 530px;
-  top:   10vh;
 
   button, .button, .btn {
     &:active, &:focus, &:hover {

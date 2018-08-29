@@ -1,9 +1,10 @@
 const m = require("mithril");
 const $ = require("jquery");
 const f = require("helpers/form_helper");
-const _ = require('lodash');
+const _ = require("lodash");
 
 let _root;
+let _uid = 0;
 const MODALS = [];
 
 const BUTTON_DEFAULTS = { class: "button", text: "OK", onclick: close };
@@ -47,23 +48,23 @@ const Dialog = {
       children.push(<Footer buttons={buttons}/>);
     }
 
-    const classes = _.uniq(_.compact(["overlay", "movable", vnode.attrs.size]));
+    const classes = _.uniq(_.compact(["overlay", "movable", vnode.attrs.size, vnode.attrs.current ? "current-overlay" : null]));
 
-    return <div class={classes.join(" ")}>{children}</div>;
+    return <div class={classes.join(" ")} title={`${vnode.attrs.id}`} key={vnode.attrs.id}>{children}</div>;
   }
 };
 
 const ModalSet = {
   view() {
-    return m("[", $.map(MODALS, (d) => m(Dialog, d)));
+    return m("[", _.map(MODALS, (d, i) => m(Dialog, _.assign(d, { current: !i }))));
   }
 };
 
 function Modal(options) {
   $(_root).show();
-  let config = $.extend({}, DEFAULT, options);
-  MODALS.unshift(config);
-  $(document.body).addClass("fixed");
+  let config = _.assign({ id: uid() }, DEFAULT, options);
+
+  push(config);
 
   this.replace = (updated) => {
     MODALS.splice(MODALS.indexOf(config), 1, updated);
@@ -79,8 +80,7 @@ function close(e) {
     e.stopPropagation();
   }
 
-  const opts = MODALS.shift();
-  $(document.body).removeClass("fixed");
+  const opts = pop();
 
   if (opts) {
     if ("function" === typeof opts.afterClose) { opts.afterClose(); }
@@ -94,8 +94,35 @@ function close(e) {
   if (MODALS.length === 0) { $(_root).hide(); }
 }
 
+function uid() { return _uid++; }
+
 function val(thing) {
   return "function" === typeof thing ? thing() : thing;
+}
+
+function pop() {
+  const config = MODALS.shift();
+
+  if (MODALS.length === 0) {
+    _root.classList.remove("fixed");
+  }
+
+  return config;
+}
+
+function push(config) {
+  MODALS.unshift(config);
+  _root.classList.add("fixed");
+}
+
+function resetCurrent() {
+  const modalElements = $(_root).find(".overlay");
+  console.log(modalElements)
+  modalElements.removeClass("current-overlay");
+
+  if (modalElements.length) {
+    modalElements[0].classList.add("current-overlay");
+  }
 }
 
 function init() {
