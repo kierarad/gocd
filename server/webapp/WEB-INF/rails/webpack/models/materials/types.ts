@@ -123,6 +123,7 @@ applyMixins(Material, ValidatableMixin);
 
 export abstract class MaterialAttributes implements ValidatableMixin {
   name: Stream<string>;
+  destination: Stream<string> = stream();
   autoUpdate: Stream<boolean>;
 
   protected constructor(name?: string, autoUpdate?: boolean) {
@@ -183,6 +184,7 @@ export class GitMaterialAttributes extends MaterialAttributes {
 
   static fromJSON(json: GitMaterialAttributesJSON) {
     const gitMaterialAttributes = new GitMaterialAttributes(json.name, json.auto_update, json.url, json.branch);
+    gitMaterialAttributes.destination(json.destination);
     gitMaterialAttributes.errors(new Errors(json.errors));
     return gitMaterialAttributes;
   }
@@ -232,6 +234,7 @@ export class SvnMaterialAttributes extends MaterialAttributes implements Validat
                                                             json.username,
                                                             json.password,
                                                             json.encrypted_password);
+    svnMaterialAttributes.destination(json.destination);
     svnMaterialAttributes.errors(new Errors(json.errors));
     return svnMaterialAttributes;
   }
@@ -250,6 +253,7 @@ export class HgMaterialAttributes extends MaterialAttributes {
 
   static fromJSON(json: HgMaterialAttributesJSON) {
     const hgMaterialAttributes = new HgMaterialAttributes(json.name, json.auto_update, json.url);
+    hgMaterialAttributes.destination(json.destination);
     hgMaterialAttributes.errors(new Errors(json.errors));
     return hgMaterialAttributes;
   }
@@ -291,6 +295,7 @@ export class P4MaterialAttributes extends MaterialAttributes {
                                                           json.username,
                                                           json.password,
                                                           json.encrypted_password);
+    p4MaterialAttributes.destination(json.destination);
     p4MaterialAttributes.errors(new Errors(json.errors));
     return p4MaterialAttributes;
   }
@@ -334,6 +339,7 @@ export class TfsMaterialAttributes extends MaterialAttributes {
                                                             json.username,
                                                             json.password,
                                                             json.encrypted_password);
+    tfsMaterialAttributes.destination(json.destination);
     tfsMaterialAttributes.errors(new Errors(json.errors));
     return tfsMaterialAttributes;
   }
