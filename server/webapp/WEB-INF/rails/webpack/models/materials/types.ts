@@ -118,10 +118,11 @@ export class Material implements ValidatableMixin {
 applyMixins(Material, ValidatableMixin);
 
 export abstract class MaterialAttributes implements ValidatableMixin {
-
+  name: Stream<string>;
   autoUpdate: Stream<boolean>;
 
   protected constructor(name?: string, autoUpdate?: boolean) {
+    this.name = stream(name);
     this.autoUpdate = stream(autoUpdate);
     ValidatableMixin.call(this);
   }
