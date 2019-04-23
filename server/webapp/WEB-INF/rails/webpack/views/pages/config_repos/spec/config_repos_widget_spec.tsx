@@ -73,15 +73,15 @@ describe("ConfigReposWidget", () => {
       helper.redraw();
       const materialPanel = helper.findByDataTestId("config-repo-material-panel");
       const title         = materialPanel.children().get(0);
-      const keyValuePair  = materialPanel.children().get(1).children[0].children;
+      const keyValuePair  = materialPanel.children().get(1).children[0];
 
       expect(title).toHaveText("Material");
-      expect(keyValuePair[0]).toContainText("Type");
-      expect(keyValuePair[0]).toContainText("git");
-      expect(keyValuePair[1]).toContainText("URL");
-      expect(keyValuePair[1]).toContainText("https://example.com/git");
-      expect(keyValuePair[2]).toContainText("Branch");
-      expect(keyValuePair[2]).toContainText("master");
+      expect(findByTestId(keyValuePair, "key-value-key-type")).toContainText("Type");
+      expect(findByTestId(keyValuePair, "key-value-value-type")).toContainText("git");
+      expect(findByTestId(keyValuePair, "key-value-key-url")).toContainText("URL");
+      expect(findByTestId(keyValuePair, "key-value-value-url")).toContainText("https://example.com/git");
+      expect(findByTestId(keyValuePair, "key-value-key-branch")).toContainText("Branch");
+      expect(findByTestId(keyValuePair, "key-value-value-branch")).toContainText("master");
     });
 
     it("should render config repository configuration details section", () => {
@@ -428,3 +428,7 @@ describe("ConfigReposWidget", () => {
     return PluginInfo.fromJSON(pluginInfoWithConfigRepoExtension, links);
   }
 });
+
+function findByTestId(el: Element, id: string): Element | null {
+  return el.querySelector(`[data-test-id="${id}"]`);
+}
