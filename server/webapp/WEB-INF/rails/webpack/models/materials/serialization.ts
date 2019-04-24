@@ -24,7 +24,7 @@ export interface MaterialJSON {
 export interface ScmAttributesJSON {
   name: string;
   auto_update: boolean;
-  destination: string;
+  destination?: string;
 }
 
 export interface GitMaterialAttributesJSON extends ScmAttributesJSON {

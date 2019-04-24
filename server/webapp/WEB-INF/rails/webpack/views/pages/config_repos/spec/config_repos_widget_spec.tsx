@@ -318,7 +318,8 @@ describe("ConfigReposWidget", () => {
                                      url: "https://example.com/git/" + (parameters.repoId),
                                      name: "foo",
                                      auto_update: true,
-                                     branch: "master"
+                                     branch: "master",
+                                     destination: ""
                                    }
                                  },
                                  configuration: [{
@@ -357,7 +358,8 @@ describe("ConfigReposWidget", () => {
                                      url: "https://example.com/git/" + (repoId || uuid()),
                                      name: "foo",
                                      auto_update: true,
-                                     branch: "master"
+                                     branch: "master",
+                                     destination: ""
                                    }
                                  },
                                  configuration: [{

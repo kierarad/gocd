@@ -183,10 +183,12 @@ export class GitMaterialAttributes extends MaterialAttributes {
   }
 
   static fromJSON(json: GitMaterialAttributesJSON) {
-    const gitMaterialAttributes = new GitMaterialAttributes(json.name, json.auto_update, json.url, json.branch);
-    gitMaterialAttributes.destination(json.destination);
-    gitMaterialAttributes.errors(new Errors(json.errors));
-    return gitMaterialAttributes;
+    const attrs = new GitMaterialAttributes(json.name, json.auto_update, json.url, json.branch);
+    if (undefined !== json.destination) {
+      attrs.destination(json.destination);
+    }
+    attrs.errors(new Errors(json.errors));
+    return attrs;
   }
 }
 
@@ -227,16 +229,20 @@ export class SvnMaterialAttributes extends MaterialAttributes implements Validat
   }
 
   static fromJSON(json: SvnMaterialAttributesJSON) {
-    const svnMaterialAttributes = new SvnMaterialAttributes(json.name,
-                                                            json.auto_update,
-                                                            json.url,
-                                                            json.check_externals,
-                                                            json.username,
-                                                            json.password,
-                                                            json.encrypted_password);
-    svnMaterialAttributes.destination(json.destination);
-    svnMaterialAttributes.errors(new Errors(json.errors));
-    return svnMaterialAttributes;
+    const attrs = new SvnMaterialAttributes(
+      json.name,
+      json.auto_update,
+      json.url,
+      json.check_externals,
+      json.username,
+      json.password,
+      json.encrypted_password,
+    );
+    if (undefined !== json.destination) {
+      attrs.destination(json.destination);
+    }
+    attrs.errors(new Errors(json.errors));
+    return attrs;
   }
 }
 
@@ -252,10 +258,12 @@ export class HgMaterialAttributes extends MaterialAttributes {
   }
 
   static fromJSON(json: HgMaterialAttributesJSON) {
-    const hgMaterialAttributes = new HgMaterialAttributes(json.name, json.auto_update, json.url);
-    hgMaterialAttributes.destination(json.destination);
-    hgMaterialAttributes.errors(new Errors(json.errors));
-    return hgMaterialAttributes;
+    const attrs = new HgMaterialAttributes(json.name, json.auto_update, json.url);
+    if (undefined !== json.destination) {
+      attrs.destination(json.destination);
+    }
+    attrs.errors(new Errors(json.errors));
+    return attrs;
   }
 }
 
@@ -287,17 +295,22 @@ export class P4MaterialAttributes extends MaterialAttributes {
   }
 
   static fromJSON(json: P4MaterialAttributesJSON) {
-    const p4MaterialAttributes = new P4MaterialAttributes(json.name,
-                                                          json.auto_update,
-                                                          json.port,
-                                                          json.use_tickets,
-                                                          json.view,
-                                                          json.username,
-                                                          json.password,
-                                                          json.encrypted_password);
-    p4MaterialAttributes.destination(json.destination);
-    p4MaterialAttributes.errors(new Errors(json.errors));
-    return p4MaterialAttributes;
+    const attrs = new P4MaterialAttributes(
+      json.name,
+      json.auto_update,
+      json.port,
+      json.use_tickets,
+      json.view,
+      json.username,
+      json.password,
+      json.encrypted_password,
+    );
+
+    if (undefined !== json.destination) {
+      attrs.destination(json.destination);
+    }
+    attrs.errors(new Errors(json.errors));
+    return attrs;
   }
 }
 
@@ -331,17 +344,21 @@ export class TfsMaterialAttributes extends MaterialAttributes {
   }
 
   static fromJSON(json: TfsMaterialAttributesJSON) {
-    const tfsMaterialAttributes = new TfsMaterialAttributes(json.name,
-                                                            json.auto_update,
-                                                            json.url,
-                                                            json.domain,
-                                                            json.project_path,
-                                                            json.username,
-                                                            json.password,
-                                                            json.encrypted_password);
-    tfsMaterialAttributes.destination(json.destination);
-    tfsMaterialAttributes.errors(new Errors(json.errors));
-    return tfsMaterialAttributes;
+    const attrs = new TfsMaterialAttributes(
+      json.name,
+      json.auto_update,
+      json.url,
+      json.domain,
+      json.project_path,
+      json.username,
+      json.password,
+      json.encrypted_password,
+    );
+    if (undefined !== json.destination) {
+      attrs.destination(json.destination);
+    }
+    attrs.errors(new Errors(json.errors));
+    return attrs;
   }
 }
 
