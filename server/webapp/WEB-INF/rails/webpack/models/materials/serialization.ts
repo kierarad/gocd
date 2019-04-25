@@ -21,48 +21,51 @@ export interface MaterialJSON {
   attributes: MaterialAttributesJSON;
 }
 
-export interface ScmAttributesJSON {
+export interface BaseAttributesJSON {
   name: string;
   auto_update: boolean;
+  errors?: ErrorsJSON;
+}
+
+export interface ScmAttributesJSON extends BaseAttributesJSON {
   destination?: string;
 }
 
 export interface GitMaterialAttributesJSON extends ScmAttributesJSON {
   url: string;
   branch: string;
-  errors?: ErrorsJSON;
 }
 
 export interface UsernamePasswordJSON {
   username?: string;
   password?: string;
   encrypted_password?: string;
-  errors?: ErrorsJSON;
 }
 
 export interface SvnMaterialAttributesJSON extends ScmAttributesJSON, UsernamePasswordJSON {
   url: string;
   check_externals: boolean;
-  errors: ErrorsJSON;
 }
 
 export interface HgMaterialAttributesJSON extends ScmAttributesJSON {
   url: string;
-  errors?: ErrorsJSON;
 }
 
 export interface P4MaterialAttributesJSON extends ScmAttributesJSON, UsernamePasswordJSON {
   port: string;
   use_tickets: boolean;
   view: string;
-  errors?: ErrorsJSON;
 }
 
 export interface TfsMaterialAttributesJSON extends ScmAttributesJSON, UsernamePasswordJSON {
   url: string;
   domain: string;
   project_path: string;
-  errors?: ErrorsJSON;
+}
+
+export interface DependencyMaterialAttributesJSON extends BaseAttributesJSON {
+  pipeline: string;
+  stage: string;
 }
 
 export type MaterialAttributesJSON =
@@ -70,4 +73,5 @@ export type MaterialAttributesJSON =
   | SvnMaterialAttributesJSON
   | HgMaterialAttributesJSON
   | P4MaterialAttributesJSON
-  | TfsMaterialAttributesJSON;
+  | TfsMaterialAttributesJSON
+  | DependencyMaterialAttributesJSON;
