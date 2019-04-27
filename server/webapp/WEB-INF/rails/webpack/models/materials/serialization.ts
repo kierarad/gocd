@@ -27,7 +27,7 @@ export interface BaseAttributesJSON {
   errors?: ErrorsJSON;
 }
 
-export interface ScmAttributesJSON extends BaseAttributesJSON {
+export interface ScmAttributesJSON extends BaseAttributesJSON, UsernamePasswordJSON {
   destination?: string;
 }
 
@@ -42,7 +42,7 @@ export interface UsernamePasswordJSON {
   encrypted_password?: string;
 }
 
-export interface SvnMaterialAttributesJSON extends ScmAttributesJSON, UsernamePasswordJSON {
+export interface SvnMaterialAttributesJSON extends ScmAttributesJSON {
   url: string;
   check_externals: boolean;
 }
@@ -51,13 +51,13 @@ export interface HgMaterialAttributesJSON extends ScmAttributesJSON {
   url: string;
 }
 
-export interface P4MaterialAttributesJSON extends ScmAttributesJSON, UsernamePasswordJSON {
+export interface P4MaterialAttributesJSON extends ScmAttributesJSON {
   port: string;
   use_tickets: boolean;
   view: string;
 }
 
-export interface TfsMaterialAttributesJSON extends ScmAttributesJSON, UsernamePasswordJSON {
+export interface TfsMaterialAttributesJSON extends ScmAttributesJSON {
   url: string;
   domain: string;
   project_path: string;

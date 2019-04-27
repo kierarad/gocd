@@ -32,7 +32,7 @@ import {
 } from "models/materials/serialization";
 import {Errors} from "models/mixins/errors";
 import {applyMixins} from "models/mixins/mixins";
-import {ValidatableMixin} from "models/mixins/new_validatable_mixin";
+import {ValidatableMixin, Validator} from "models/mixins/new_validatable_mixin";
 import {ErrorMessages} from "models/mixins/validatable";
 import {EncryptedValue} from "views/components/forms/encrypted_value";
 const s = require("helpers/string-plus");
@@ -182,19 +182,47 @@ export abstract class MaterialAttributes implements ValidatableMixin {
 
 applyMixins(MaterialAttributes, ValidatableMixin);
 
+class AuthNotSetInUrlAndUserPassFieldsValidator extends Validator {
+  protected doValidate(entity: any, attr: string): void {
+    const url = this.get(entity, attr) as string;
+    if (!!url) {
+      const urlObj = new URL(url);
+      const username = this.get(entity, "username") as string | undefined;
+      const password = this.get(entity, "password") as EncryptedValue | undefined;
+
+      if ((!!username || !!(password && password.value())) && (!!urlObj.username || !!urlObj.password || url.indexOf("@") !== -1)) {
+        entity.errors().add(attr, "URL credentials must be set in either the URL or the username+password fields, but not both.");
+      }
+    }
+  }
+
+  private get(entity: any, attr: string): any {
+    const val = entity[attr];
+    return ("function" === typeof val) ? val() : val;
+  }
+}
+
 export class GitMaterialAttributes extends MaterialAttributes {
   url: Stream<string>;
   branch: Stream<string>;
+  username: Stream<string>;
+  password: Stream<EncryptedValue>;
 
-  constructor(name?: string, autoUpdate?: boolean, url?: string, branch?: string) {
+  constructor(name?: string, autoUpdate?: boolean, url?: string, branch?: string,
+              username?: string,
+              password?: string,
+              encryptedPassword?: string) {
     super(name, autoUpdate);
-    this.url    = stream(url);
-    this.branch = stream(branch);
+    this.url      = stream(url);
+    this.branch   = stream(branch);
+    this.username = stream(username);
+    this.password = stream(plainOrCipherValue({plainText: password, cipherText: encryptedPassword}));
     this.validatePresenceOf("url");
+    this.validateWith(new AuthNotSetInUrlAndUserPassFieldsValidator(), "url");
   }
 
   static fromJSON(json: GitMaterialAttributesJSON) {
-    const attrs = new GitMaterialAttributes(json.name, json.auto_update, json.url, json.branch);
+    const attrs = new GitMaterialAttributes(json.name, json.auto_update, json.url, json.branch, json.username, json.password, json.encrypted_password);
     if (undefined !== json.destination) {
       attrs.destination(json.destination);
     }
@@ -261,15 +289,23 @@ applyMixins(SvnMaterialAttributes, ValidatableMixin);
 
 export class HgMaterialAttributes extends MaterialAttributes {
   url: Stream<string>;
+  username: Stream<string>;
+  password: Stream<EncryptedValue>;
 
-  constructor(name?: string, autoUpdate?: boolean, url?: string) {
+  constructor(name?: string, autoUpdate?: boolean, url?: string,
+              username?: string,
+              password?: string,
+              encryptedPassword?: string) {
     super(name, autoUpdate);
-    this.url = stream(url);
+    this.url      = stream(url);
+    this.username = stream(username);
+    this.password = stream(plainOrCipherValue({plainText: password, cipherText: encryptedPassword}));
     this.validatePresenceOf("url");
+    this.validateWith(new AuthNotSetInUrlAndUserPassFieldsValidator(), "url");
   }
 
   static fromJSON(json: HgMaterialAttributesJSON) {
-    const attrs = new HgMaterialAttributes(json.name, json.auto_update, json.url);
+    const attrs = new HgMaterialAttributes(json.name, json.auto_update, json.url, json.username, json.password, json.encrypted_password);
     if (undefined !== json.destination) {
       attrs.destination(json.destination);
     }
